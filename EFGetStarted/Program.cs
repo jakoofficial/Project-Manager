@@ -52,6 +52,8 @@ public class Program
 
         printIncompleteTasksAndTodos();
 
+        seedWorkers();
+
         Console.ReadLine();
     }
 
@@ -71,6 +73,85 @@ public class Program
                 {
                     Console.WriteLine($"todo: {todo.Name} | status: {todo.IsCompleted}");
                 }
+            }
+        }
+    }
+
+    static void seedWorkers()
+    {
+        using (BloggingContext context = new())
+        {
+            AddTeamWorker(context, "Steen Secher", "Fronted");
+            context.SaveChanges();
+            AddTeamWorker(context, "Ejvind Møller", "Fronted");
+            context.SaveChanges();
+            AddTeamWorker(context, "Konrad Sommer", "Fronted");
+            context.SaveChanges();
+
+            AddTeamWorker(context, "Sofus Lotus", "Backend");
+            context.SaveChanges();
+            AddTeamWorker(context, "Remo Lademann", "Backend");
+            context.SaveChanges();
+            AddTeamWorker(context, "Konrad Sommer", "Backend");
+
+            AddTeamWorker(context, "Steen Secher", "Testere");
+            context.SaveChanges();
+            AddTeamWorker(context, "Ella Fanth", "Testere");
+            context.SaveChanges();
+            AddTeamWorker(context, "Anna Dam", "Testere");
+            context.SaveChanges();
+
+            //context.SaveChanges();
+        }
+    }
+
+    static void AddTeamWorker(BloggingContext context, string workerName, string teamName)
+    {
+        // Check if the team with the given name already exists
+        Team existingTeam = context.Teams.SingleOrDefault(t => t.Name == teamName);
+        Worker existingWorker = context.Workers.SingleOrDefault(w => w.Name == workerName);
+
+        if (existingTeam == null)
+        {
+            // If the team doesn't exist, create a new team and add the team worker
+            Team newTeam = new Team { Name = teamName };
+            context.Teams.Add(newTeam);
+
+            if (existingWorker == null)
+            {
+                context.TeamWorkers.Add(new TeamWorker()
+                {
+                    Worker = new Worker { Name = workerName },
+                    Team = newTeam
+                });
+            }
+            else
+            {
+                context.TeamWorkers.Add(new TeamWorker()
+                {
+                    Worker = existingWorker,
+                    Team = newTeam
+                });
+            }
+        }
+        else
+        {
+            if (existingWorker == null)
+            {
+                // If the team already exists, add the team worker only
+                context.TeamWorkers.Add(new TeamWorker()
+                {
+                    Worker = new Worker { Name = workerName },
+                    Team = existingTeam
+                });
+            }
+            else
+            {
+                context.TeamWorkers.Add(new TeamWorker()
+                {
+                    Worker = existingWorker,
+                    Team = existingTeam
+                });
             }
         }
     }

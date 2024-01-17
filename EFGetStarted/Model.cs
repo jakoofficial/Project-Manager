@@ -9,6 +9,9 @@ public class BloggingContext : DbContext
     public DbSet<Post> Posts { get; set; }
     public DbSet<Tasks> Tasks { get; set; }
     public DbSet<Todo> Todos { get; set; }
+    public DbSet<TeamWorker> TeamWorkers { get; set; }
+    public DbSet<Team> Teams { get; set; }
+    public DbSet<Worker> Workers { get; set; }
     
 
     public string DbPath { get; }
@@ -24,6 +27,11 @@ public class BloggingContext : DbContext
     // special "local" folder for your platform.
     protected override void OnConfiguring(DbContextOptionsBuilder options)
         => options.UseSqlite($"Data Source={DbPath}");
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<TeamWorker>().HasKey(p => new { p.TeamId, p.WorkerId });
+    }
 }
 
 public class Blog

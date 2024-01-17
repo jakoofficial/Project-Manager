@@ -3,6 +3,7 @@ using System;
 using EFGetStarted;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFGetStarted.Migrations
 {
     [DbContext(typeof(BloggingContext))]
-    partial class BloggingContextModelSnapshot : ModelSnapshot
+    [Migration("20240117114623_AddedWorkerTeamClasses")]
+    partial class AddedWorkerTeamClasses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -83,7 +86,7 @@ namespace EFGetStarted.Migrations
 
                     b.HasKey("TeamId");
 
-                    b.ToTable("Teams");
+                    b.ToTable("Team");
                 });
 
             modelBuilder.Entity("EFGetStarted.TeamWorker", b =>
@@ -136,7 +139,7 @@ namespace EFGetStarted.Migrations
 
                     b.HasKey("WorkerId");
 
-                    b.ToTable("Workers");
+                    b.ToTable("Worker");
                 });
 
             modelBuilder.Entity("EFGetStarted.Post", b =>
