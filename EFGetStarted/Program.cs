@@ -12,11 +12,19 @@ public class Program
         // Note: This sample requires the database to be created before running.
         Console.WriteLine($"Database path: {db.DbPath}.");
 
-        seedTasks();
+        //seedTasks();
 
         using (BloggingContext context = new())
         {
-
+            var tasks = context.Tasks.Include(task => task.Todos);
+            foreach (var task in tasks)
+            {
+                Console.WriteLine($"Task: {task.Name}");
+                foreach (var todo in task.Todos)
+                {
+                    Console.WriteLine($"- {todo.Name}");
+                }
+            }
         }
 
         // Create
@@ -42,6 +50,8 @@ public class Program
         db.Remove(blog);
         db.SaveChanges();
 
+
+        Console.ReadLine();
     }
     static void seedTasks()
     {
