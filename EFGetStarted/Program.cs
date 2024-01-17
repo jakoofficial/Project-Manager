@@ -28,31 +28,53 @@ public class Program
         }
 
         // Create
-        Console.WriteLine("Inserting a new blog");
+        //Console.WriteLine("Inserting a new blog");
         db.Add(new Blog { Url = "http://blogs.msdn.com/adonet" });
         db.SaveChanges();
 
         // Read
-        Console.WriteLine("Querying for a blog");
+        //Console.WriteLine("Querying for a blog");
         var blog = db.Blogs
             .OrderBy(b => b.BlogId)
             .First();
 
         // Update
-        Console.WriteLine("Updating the blog and adding a post");
+        //Console.WriteLine("Updating the blog and adding a post");
         blog.Url = "https://devblogs.microsoft.com/dotnet";
         blog.Posts.Add(
             new Post { Title = "Hello World", Content = "I wrote an app using EF Core!" });
         db.SaveChanges();
 
         // Delete
-        Console.WriteLine("Delete the blog");
+        //Console.WriteLine("Delete the blog");
         db.Remove(blog);
         db.SaveChanges();
 
+        printIncompleteTasksAndTodos();
 
         Console.ReadLine();
     }
+
+    static void printIncompleteTasksAndTodos()
+    {
+        using (var context = new BloggingContext())
+        {
+            var tasks = context.Tasks.Include(
+                task => task.Todos).Where(
+                task => task.Todos.Any(
+                todo => !todo.IsCompleted)).ToList();
+
+            foreach (var task in tasks)
+            {
+                Console.WriteLine($"\ntask: {task.Name}");
+                foreach (var todo in task.Todos)
+                {
+                    Console.WriteLine($"todo: {todo.Name} | status: {todo.IsCompleted}");
+                }
+            }
+        }
+    }
+
     static void seedTasks()
     {
         Tasks t1 = new Tasks(1, "Produce software", new List<Todo>()
@@ -61,7 +83,7 @@ public class Program
             new Todo(2,"Compile source", false),
             new Todo(3,"Test program", false),
         });
-            Tasks t2 = new Tasks(2, "Brew coffee,", new List<Todo>()
+        Tasks t2 = new Tasks(2, "Brew coffee,", new List<Todo>()
         {
             new Todo(4,"Pour water", false),
             new Todo(5,"coffee", false),
