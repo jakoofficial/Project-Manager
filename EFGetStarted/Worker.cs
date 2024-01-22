@@ -10,17 +10,11 @@ namespace EFGetStarted
     {
         public int WorkerId { get; set; }
         public string Name { get; set; }
-        public List<TeamWorker> Teams { get; set; }
+        public List<TeamWorker> Teams { get; set; } = new();
 
-        public Todo CurrentTodo { get; set; }
-        public List<Todo> Todos { get; set; }
+        // public int CurrentTodoId{get;set;}
+        public Todo? CurrentTodo {get;set;}
+        // public List<Todo> Todos {get;set;} = new();
 
-        public Worker() { }
-        public Worker(int workerId, string name, List<TeamWorker> team)
-        {
-            WorkerId = workerId;
-            Name = name;
-            Teams = team;
-        }
     }
 }

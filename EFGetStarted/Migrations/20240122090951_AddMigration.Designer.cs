@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFGetStarted.Migrations
 {
     [DbContext(typeof(BloggingContext))]
-    [Migration("20240117110206_AddedTeamAndWorker")]
-    partial class AddedTeamAndWorker
+    [Migration("20240122090951_AddMigration")]
+    partial class AddMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -74,6 +74,21 @@ namespace EFGetStarted.Migrations
                     b.ToTable("Tasks");
                 });
 
+            modelBuilder.Entity("EFGetStarted.Team", b =>
+                {
+                    b.Property<int>("TeamId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TeamId");
+
+                    b.ToTable("Teams");
+                });
+
             modelBuilder.Entity("EFGetStarted.TeamWorker", b =>
                 {
                     b.Property<int>("TeamId")
@@ -84,7 +99,9 @@ namespace EFGetStarted.Migrations
 
                     b.HasKey("TeamId", "WorkerId");
 
-                    b.ToTable("TeamWorker");
+                    b.HasIndex("WorkerId");
+
+                    b.ToTable("TeamWorkers");
                 });
 
             modelBuilder.Entity("EFGetStarted.Todo", b =>
@@ -110,6 +127,21 @@ namespace EFGetStarted.Migrations
                     b.ToTable("Todos");
                 });
 
+            modelBuilder.Entity("EFGetStarted.Worker", b =>
+                {
+                    b.Property<int>("WorkerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("WorkerId");
+
+                    b.ToTable("Workers");
+                });
+
             modelBuilder.Entity("EFGetStarted.Post", b =>
                 {
                     b.HasOne("EFGetStarted.Blog", "Blog")
@@ -119,6 +151,25 @@ namespace EFGetStarted.Migrations
                         .IsRequired();
 
                     b.Navigation("Blog");
+                });
+
+            modelBuilder.Entity("EFGetStarted.TeamWorker", b =>
+                {
+                    b.HasOne("EFGetStarted.Team", "Team")
+                        .WithMany("Workers")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EFGetStarted.Worker", "Worker")
+                        .WithMany("Teams")
+                        .HasForeignKey("WorkerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Team");
+
+                    b.Navigation("Worker");
                 });
 
             modelBuilder.Entity("EFGetStarted.Todo", b =>
@@ -136,6 +187,16 @@ namespace EFGetStarted.Migrations
             modelBuilder.Entity("EFGetStarted.Tasks", b =>
                 {
                     b.Navigation("Todos");
+                });
+
+            modelBuilder.Entity("EFGetStarted.Team", b =>
+                {
+                    b.Navigation("Workers");
+                });
+
+            modelBuilder.Entity("EFGetStarted.Worker", b =>
+                {
+                    b.Navigation("Teams");
                 });
 #pragma warning restore 612, 618
         }

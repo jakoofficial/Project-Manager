@@ -12,12 +12,5 @@ namespace EFGetStarted
         public Team? Team { get; set; }
         public int WorkerId { get; set; }
         public Worker? Worker { get; set; }
-
-        public TeamWorker() { }
-        public TeamWorker(int teamId, int workerId)
-        {
-            this.TeamId = teamId;
-            this.WorkerId = workerId;
-        }
     }
 }

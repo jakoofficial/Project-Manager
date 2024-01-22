@@ -12,7 +12,6 @@ public class Program
         // Note: This sample requires the database to be created before running.
         Console.WriteLine($"Database path: {db.DbPath}.");
 
-        //seedTasks();
 
         using (BloggingContext context = new())
         {
@@ -30,6 +29,7 @@ public class Program
         // Create
         //Console.WriteLine("Inserting a new blog");
         db.Add(new Blog { Url = "http://blogs.msdn.com/adonet" });
+    
         db.SaveChanges();
 
         // Read
@@ -50,11 +50,46 @@ public class Program
         db.Remove(blog);
         db.SaveChanges();
 
-        printIncompleteTasksAndTodos();
+        //printIncompleteTasksAndTodos();
 
-        seedWorkers();
+        //seedTasks();
+        //seedWorkers();
 
         Console.ReadLine();
+    }
+
+    static void seedWorkers(){
+        //Frontend
+        Worker Steen = new(){Name = "Steen Secher"};
+        Worker Ejvind = new(){Name = "Ejvind Møller"};
+        Worker Konrad = new(){Name = "Konrad Sommer"};
+        Team Frontend = new(){ Name="Frontend" };
+
+        //Backend //Including Konrad
+        Worker Sofus = new(){Name = "Sofus Lotus"};
+        Worker Remo = new(){Name = "Remo Lademann"};
+        Team Backend = new(){ Name="Backend" };
+        
+        //Testere //Including Steen
+        Worker Ella = new(){Name = "Ella Fanth"};
+        Worker Anne = new(){Name = "Anne Dam"};
+        Team Testere = new(){ Name="Testere" };
+
+        using( var ctx = new BloggingContext()){
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = Frontend, Worker = Steen});
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = Frontend, Worker = Ejvind});
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = Frontend, Worker = Konrad});
+            
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = Backend, Worker = Sofus});
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = Backend, Worker = Remo});
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = Backend, Worker = Konrad});
+
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = Testere, Worker = Steen});
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = Testere, Worker = Ella});
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = Testere, Worker = Anne});
+
+            ctx.SaveChanges();
+        }
     }
 
     static void printIncompleteTasksAndTodos()
@@ -74,34 +109,6 @@ public class Program
                     Console.WriteLine($"todo: {todo.Name} | status: {todo.IsCompleted}");
                 }
             }
-        }
-    }
-
-    static void seedWorkers()
-    {
-        using (BloggingContext context = new())
-        {
-            AddTeamWorker(context, "Steen Secher", "Fronted");
-            context.SaveChanges();
-            AddTeamWorker(context, "Ejvind Møller", "Fronted");
-            context.SaveChanges();
-            AddTeamWorker(context, "Konrad Sommer", "Fronted");
-            context.SaveChanges();
-
-            AddTeamWorker(context, "Sofus Lotus", "Backend");
-            context.SaveChanges();
-            AddTeamWorker(context, "Remo Lademann", "Backend");
-            context.SaveChanges();
-            AddTeamWorker(context, "Konrad Sommer", "Backend");
-
-            AddTeamWorker(context, "Steen Secher", "Testere");
-            context.SaveChanges();
-            AddTeamWorker(context, "Ella Fanth", "Testere");
-            context.SaveChanges();
-            AddTeamWorker(context, "Anna Dam", "Testere");
-            context.SaveChanges();
-
-            //context.SaveChanges();
         }
     }
 

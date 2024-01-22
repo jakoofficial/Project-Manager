@@ -29,8 +29,14 @@ public class BloggingContext : DbContext
         => options.UseSqlite($"Data Source={DbPath}");
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
         modelBuilder.Entity<TeamWorker>().HasKey(p => new { p.TeamId, p.WorkerId });
+        modelBuilder.Entity<Worker>().
+            HasOne<Todo>()
+            .WithMany()
+            .IsRequired(false); //OnDelete(DeleteBehavior.SetNull);
+        // modelBuilder.Entity<Team>().
+        //     HasOne<Tasks>().WithMany()
+        //     .IsRequired(false);
     }
 }
 

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EFGetStarted.Migrations
 {
     [DbContext(typeof(BloggingContext))]
-    [Migration("20240117110427_ChangedTeamNWorker")]
-    partial class ChangedTeamNWorker
+    [Migration("20240122100454_AddedWorkerTeamTodoTasksStuff")]
+    partial class AddedWorkerTeamTodoTasksStuff
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -69,9 +69,34 @@ namespace EFGetStarted.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("Tasksid");
 
+                    b.HasIndex("TeamId");
+
                     b.ToTable("Tasks");
+                });
+
+            modelBuilder.Entity("EFGetStarted.Team", b =>
+                {
+                    b.Property<int>("TeamId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CurrentTaskTasksid")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("TeamId");
+
+                    b.HasIndex("CurrentTaskTasksid");
+
+                    b.ToTable("Teams");
                 });
 
             modelBuilder.Entity("EFGetStarted.TeamWorker", b =>
@@ -84,7 +109,9 @@ namespace EFGetStarted.Migrations
 
                     b.HasKey("TeamId", "WorkerId");
 
-                    b.ToTable("TeamWorker");
+                    b.HasIndex("WorkerId");
+
+                    b.ToTable("TeamWorkers");
                 });
 
             modelBuilder.Entity("EFGetStarted.Todo", b =>
@@ -103,11 +130,36 @@ namespace EFGetStarted.Migrations
                     b.Property<int?>("Tasksid")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("WorkerId")
+                        .HasColumnType("INTEGER");
+
                     b.HasKey("TodoId");
 
                     b.HasIndex("Tasksid");
 
+                    b.HasIndex("WorkerId");
+
                     b.ToTable("Todos");
+                });
+
+            modelBuilder.Entity("EFGetStarted.Worker", b =>
+                {
+                    b.Property<int>("WorkerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CurrentTodoTodoId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("WorkerId");
+
+                    b.HasIndex("CurrentTodoTodoId");
+
+                    b.ToTable("Workers");
                 });
 
             modelBuilder.Entity("EFGetStarted.Post", b =>
@@ -121,11 +173,63 @@ namespace EFGetStarted.Migrations
                     b.Navigation("Blog");
                 });
 
+            modelBuilder.Entity("EFGetStarted.Tasks", b =>
+                {
+                    b.HasOne("EFGetStarted.Team", null)
+                        .WithMany("TeamTasks")
+                        .HasForeignKey("TeamId");
+                });
+
+            modelBuilder.Entity("EFGetStarted.Team", b =>
+                {
+                    b.HasOne("EFGetStarted.Tasks", "CurrentTask")
+                        .WithMany()
+                        .HasForeignKey("CurrentTaskTasksid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CurrentTask");
+                });
+
+            modelBuilder.Entity("EFGetStarted.TeamWorker", b =>
+                {
+                    b.HasOne("EFGetStarted.Team", "Team")
+                        .WithMany("Workers")
+                        .HasForeignKey("TeamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EFGetStarted.Worker", "Worker")
+                        .WithMany("Teams")
+                        .HasForeignKey("WorkerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Team");
+
+                    b.Navigation("Worker");
+                });
+
             modelBuilder.Entity("EFGetStarted.Todo", b =>
                 {
                     b.HasOne("EFGetStarted.Tasks", null)
                         .WithMany("Todos")
                         .HasForeignKey("Tasksid");
+
+                    b.HasOne("EFGetStarted.Worker", null)
+                        .WithMany("Todos")
+                        .HasForeignKey("WorkerId");
+                });
+
+            modelBuilder.Entity("EFGetStarted.Worker", b =>
+                {
+                    b.HasOne("EFGetStarted.Todo", "CurrentTodo")
+                        .WithMany()
+                        .HasForeignKey("CurrentTodoTodoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CurrentTodo");
                 });
 
             modelBuilder.Entity("EFGetStarted.Blog", b =>
@@ -135,6 +239,20 @@ namespace EFGetStarted.Migrations
 
             modelBuilder.Entity("EFGetStarted.Tasks", b =>
                 {
+                    b.Navigation("Todos");
+                });
+
+            modelBuilder.Entity("EFGetStarted.Team", b =>
+                {
+                    b.Navigation("TeamTasks");
+
+                    b.Navigation("Workers");
+                });
+
+            modelBuilder.Entity("EFGetStarted.Worker", b =>
+                {
+                    b.Navigation("Teams");
+
                     b.Navigation("Todos");
                 });
 #pragma warning restore 612, 618

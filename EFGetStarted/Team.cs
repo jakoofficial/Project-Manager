@@ -10,17 +10,9 @@ namespace EFGetStarted
     {
         public int TeamId { get; set; }
         public string Name { get; set; }
-        public List<TeamWorker> Workers { get; set; }
-        public Tasks CurrentTask { get; set; }
-        public List<Tasks> Tasks { get; set; }
+        public List<TeamWorker> Workers { get; set; } = new();
 
-        public Team() { }
-
-        public Team(int teamId, string name, List<TeamWorker> workers)
-        {
-            TeamId = teamId;
-            Name = name;
-            Workers = workers;
-        }
+        // public Tasks? CurrentTask {get;set;}
+        // public List<Tasks> TeamTasks{get;set;} = new();
     }
 }
