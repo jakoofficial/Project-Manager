@@ -53,27 +53,46 @@ public class Program
         //printIncompleteTasksAndTodos();
 
         //seedTasks();
-        //seedWorkers();
+        seedWorkers();
 
         Console.ReadLine();
     }
 
     static void seedWorkers(){
+        
+        //Todos & Tasks
+        Todo fTodo = new(){Name = "Frontend Todo", IsCompleted=true};
+        Todo bTodo = new(){Name = "Backend Todo", IsCompleted=false};
+        Todo tTodo = new(){Name = "Testere Todo", IsCompleted=false};
+        Todo rTodo = new(){Name = "Re Todo", IsCompleted=false};
+
+        Tasks fTask = new(){Name = "Frontend Tasks", Todos = new List<Todo>(){
+            fTodo
+        }};
+        Tasks bTask = new(){Name = "Backend Tasks", Todos = new List<Todo>(){
+            bTodo
+        }};
+        Tasks tTask = new(){Name = "Testere Tasks", Todos = new List<Todo>(){
+            tTodo
+        }};
+
         //Frontend
-        Worker Steen = new(){Name = "Steen Secher"};
-        Worker Ejvind = new(){Name = "Ejvind Møller"};
-        Worker Konrad = new(){Name = "Konrad Sommer"};
-        Team Frontend = new(){ Name="Frontend" };
+        Worker Steen = new(){Name = "Steen Secher", Current = fTodo};
+        Worker Ejvind = new(){Name = "Ejvind Møller", Current = fTodo};
+        Worker Konrad = new(){Name = "Konrad Sommer", Current = fTodo};
+        
+        Team Frontend = new(){ Name="Frontend", Current = fTask };
+
 
         //Backend //Including Konrad
-        Worker Sofus = new(){Name = "Sofus Lotus"};
-        Worker Remo = new(){Name = "Remo Lademann"};
-        Team Backend = new(){ Name="Backend" };
+        Worker Sofus = new(){Name = "Sofus Lotus", Current = bTodo};
+        Worker Remo = new(){Name = "Remo Lademann", Current = bTodo};
+        Team Backend = new(){ Name="Backend", Current = bTask };
         
         //Testere //Including Steen
-        Worker Ella = new(){Name = "Ella Fanth"};
-        Worker Anne = new(){Name = "Anne Dam"};
-        Team Testere = new(){ Name="Testere" };
+        Worker Ella = new(){Name = "Ella Fanth", Current = tTodo};
+        Worker Anne = new(){Name = "Anne Dam", Current = tTodo};
+        Team Testere = new(){ Name="Testere", Current = tTask };
 
         using( var ctx = new BloggingContext()){
             ctx.TeamWorkers.Add(new TeamWorker(){Team = Frontend, Worker = Steen});

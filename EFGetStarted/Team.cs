@@ -12,7 +12,7 @@ namespace EFGetStarted
         public string Name { get; set; }
         public List<TeamWorker> Workers { get; set; } = new();
 
-        // public Tasks? CurrentTask {get;set;}
-        // public List<Tasks> TeamTasks{get;set;} = new();
+        public Tasks? Current {get;set;}
+        public List<Tasks>? TeamTasks{get;set;} = new();
     }
 }

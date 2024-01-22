@@ -13,8 +13,8 @@ namespace EFGetStarted
         public List<TeamWorker> Teams { get; set; } = new();
 
         // public int CurrentTodoId{get;set;}
-        public Todo? CurrentTodo {get;set;}
-        // public List<Todo> Todos {get;set;} = new();
+        public Todo? Current {get;set;}
+        public List<Todo>? Todos {get;set;} = new();
 
     }
 }
