@@ -51,9 +51,15 @@ public class Program
         db.SaveChanges();
 
         //printIncompleteTasksAndTodos();
+        
+        if(db.Tasks.Count() < 1) {
+            seedTasks(db);
+        }
+        if(db.Teams.Count() < 1) {
+            seedWorkers();
+        }
 
-        //seedTasks();
-        seedWorkers();
+        PrintTeamsWithoutTasks();
 
         Console.ReadLine();
     }
@@ -94,6 +100,8 @@ public class Program
         Worker Anne = new(){Name = "Anne Dam", Current = tTodo};
         Team Testere = new(){ Name="Testere", Current = tTask };
 
+        Team noTaskTeam = new(){Name = "NoTaskTeam"};
+
         using( var ctx = new BloggingContext()){
             ctx.TeamWorkers.Add(new TeamWorker(){Team = Frontend, Worker = Steen});
             ctx.TeamWorkers.Add(new TeamWorker(){Team = Frontend, Worker = Ejvind});
@@ -107,8 +115,24 @@ public class Program
             ctx.TeamWorkers.Add(new TeamWorker(){Team = Testere, Worker = Ella});
             ctx.TeamWorkers.Add(new TeamWorker(){Team = Testere, Worker = Anne});
 
+            ctx.TeamWorkers.Add(new TeamWorker(){Team = noTaskTeam, Worker = Ejvind});
             ctx.SaveChanges();
         }
+    }
+
+    static List<Team> PrintTeamsWithoutTasks(){
+        List<Team> noTaskTeams = new();
+        using (var ctx = new BloggingContext()) {
+            var teamsNoTasks = ctx.Teams
+                .Where(t=>t.Current == null);
+            
+            foreach (var t in teamsNoTasks) {
+                noTaskTeams.Add(t);
+                Console.WriteLine(t.Name +" | No (current)tasks");
+            }
+        }
+
+        return new();
     }
 
     static void printIncompleteTasksAndTodos()
@@ -130,77 +154,38 @@ public class Program
             }
         }
     }
-
-    static void AddTeamWorker(BloggingContext context, string workerName, string teamName)
-    {
-        // Check if the team with the given name already exists
-        Team existingTeam = context.Teams.SingleOrDefault(t => t.Name == teamName);
-        Worker existingWorker = context.Workers.SingleOrDefault(w => w.Name == workerName);
-
-        if (existingTeam == null)
-        {
-            // If the team doesn't exist, create a new team and add the team worker
-            Team newTeam = new Team { Name = teamName };
-            context.Teams.Add(newTeam);
-
-            if (existingWorker == null)
-            {
-                context.TeamWorkers.Add(new TeamWorker()
-                {
-                    Worker = new Worker { Name = workerName },
-                    Team = newTeam
-                });
-            }
-            else
-            {
-                context.TeamWorkers.Add(new TeamWorker()
-                {
-                    Worker = existingWorker,
-                    Team = newTeam
-                });
-            }
-        }
-        else
-        {
-            if (existingWorker == null)
-            {
-                // If the team already exists, add the team worker only
-                context.TeamWorkers.Add(new TeamWorker()
-                {
-                    Worker = new Worker { Name = workerName },
-                    Team = existingTeam
-                });
-            }
-            else
-            {
-                context.TeamWorkers.Add(new TeamWorker()
-                {
-                    Worker = existingWorker,
-                    Team = existingTeam
-                });
-            }
-        }
+    static bool checkTaskExistence(BloggingContext db, Tasks t){
+        Tasks oTask = db.Tasks.SingleOrDefault(e => e.Name == t.Name);
+        
+        if(oTask == null) return true;
+        else return false;
     }
 
-    static void seedTasks()
+    static void seedTasks(BloggingContext db)
     {
-        Tasks t1 = new Tasks(1, "Produce software", new List<Todo>()
-        {
-            new Todo(1,"Write code", false),
-            new Todo(2,"Compile source", false),
-            new Todo(3,"Test program", false),
-        });
-        Tasks t2 = new Tasks(2, "Brew coffee,", new List<Todo>()
-        {
-            new Todo(4,"Pour water", false),
-            new Todo(5,"coffee", false),
-            new Todo(6,"Turn on", false),
-        });
+        Todo to1 = new(){Name = "Write code", IsCompleted=false};
+        Todo to2 = new(){Name = "Compile Source", IsCompleted=false};
+        Todo to3 = new(){Name = "Test program", IsCompleted=false};
 
+        Todo to4 = new(){Name = "Pour water", IsCompleted=false};
+        Todo to5 = new(){Name = "Coffee", IsCompleted=false};
+        Todo to6 = new(){Name = "Turn on", IsCompleted=false};
+
+        Tasks t1 = new(){Name = "Produce software", Todos = new List<Todo>(){
+            to1, to2, to3
+        }};
+        
+        Tasks t2 = new(){Name = "Brew coffee", Todos = new List<Todo>(){
+            to4, to5, to6
+        }};
         using (BloggingContext context = new())
         {
-            context.Tasks.Add(t1);
-            context.Tasks.Add(t2);
+            if(checkTaskExistence(db, t1)){
+                context.Tasks.Add(t1);
+            }
+            if(checkTaskExistence(db, t2)){
+                context.Tasks.Add(t2);
+            }
             context.SaveChanges();
         }
 
