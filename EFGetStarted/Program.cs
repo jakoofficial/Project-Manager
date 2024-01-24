@@ -13,18 +13,18 @@ public class Program
         Console.WriteLine($"Database path: {db.DbPath}.");
 
 
-        using (BloggingContext context = new())
-        {
-            var tasks = context.Tasks.Include(task => task.Todos);
-            foreach (var task in tasks)
-            {
-                Console.WriteLine($"Task: {task.Name}");
-                foreach (var todo in task.Todos)
-                {
-                    Console.WriteLine($"- {todo.Name}");
-                }
-            }
-        }
+        // using (BloggingContext context = new())
+        // {
+        //     var tasks = context.Tasks.Include(task => task.Todos);
+        //     foreach (var task in tasks)
+        //     {
+        //         Console.WriteLine($"Task: {task.Name}");
+        //         foreach (var todo in task.Todos)
+        //         {
+        //             Console.WriteLine($"- {todo.Name}");
+        //         }
+        //     }
+        // }
 
         // Create
         //Console.WriteLine("Inserting a new blog");
@@ -52,17 +52,31 @@ public class Program
 
         //printIncompleteTasksAndTodos();
         
-        if(db.Tasks.Count() < 1) {
-            seedTasks(db);
-        }
+        // if(db.Tasks.Count() < 1) {
+        //     seedTasks(db);
+        // }
         if(db.Teams.Count() < 1) {
             seedWorkers();
         }
 
         //PrintTeamsWithoutTasks();
-        PrintTeamsCurrentTask();
+        //PrintTeamsCurrentTask();
+        PrintTeamProgress();
+        //getTasks();
         Console.ReadLine();
     }
+
+static void getTasks(){
+    using(var task = new BloggingContext()){
+            var taskList = task.Tasks.Include(todo=>todo.Todos).ToList();
+            foreach (var t in taskList){
+                var todos = t.Todos;
+                foreach (var d in todos){
+                    System.Console.WriteLine(d.GetType());
+                }
+            }
+    }
+}
 
     static void seedWorkers(){
         
@@ -73,7 +87,7 @@ public class Program
         Todo rTodo = new(){Name = "Re Todo", IsCompleted=false};
 
         Tasks fTask = new(){Name = "Frontend Tasks", Todos = new List<Todo>(){
-            fTodo
+            fTodo, rTodo
         }};
         Tasks bTask = new(){Name = "Backend Tasks", Todos = new List<Todo>(){
             bTodo
@@ -100,7 +114,7 @@ public class Program
         Worker Anne = new(){Name = "Anne Dam", Current = tTodo};
         Team Testere = new(){ Name="Testere", Current = tTask };
 
-        Team noTaskTeam = new(){Name = "NoTaskTeam"};
+        Team noTaskTeam = new(){Name = "NoTaskTeam", TeamTasks = new(), Current = null};
 
         using( var ctx = new BloggingContext()){
             ctx.TeamWorkers.Add(new TeamWorker(){Team = Frontend, Worker = Steen});
@@ -120,8 +134,33 @@ public class Program
         }
     }
 
+    static void PrintTeamProgress(){
+        using (var ctx = new BloggingContext()){
+            var teams = ctx.Teams.Include(t=>t.Current).Where(t=>t.Current.Tasksid != null);
+            foreach(var team in teams) {
+                int taskId = team.Current.Tasksid;
+                var tasks = ctx.Tasks.Include(t=>t.Todos).Where(t => t.Tasksid == taskId);
+
+                int todoCount = 0;
+                int todosDone = 0;
+                int todoPercentDone = 0;
+                foreach (var task in tasks)
+                {
+                    todoCount = task.Todos.Count();
+                    foreach (var todo in task.Todos)
+                    {
+                        if (todo.IsCompleted) todosDone++;
+                    }
+
+                    todoPercentDone = (todosDone*100) / todoCount;
+                    System.Console.WriteLine($"Team: {team.Name} | Current Task: {task.Name} | {todoPercentDone}% done");
+                }
+                // System.Console.WriteLine(team.Current.Tasksid);
+            }
+        }
+    }
+
     static void PrintTeamsCurrentTask(){
-        List<Team> team = new();
         using (var ctx = new BloggingContext()){
             var t = ctx.Teams.Include(ta=>ta.Current);
             foreach (var i in t) {

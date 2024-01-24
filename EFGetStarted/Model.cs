@@ -30,14 +30,7 @@ public class BloggingContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<TeamWorker>().HasKey(p => new { p.TeamId, p.WorkerId });
-        // modelBuilder.Entity<Worker>().
-        //     HasOne<Todo>()
-        //     .WithMany()
-        //     .IsRequired(false); 
-        //OnDelete(DeleteBehavior.SetNull);
-        // modelBuilder.Entity<Team>().
-        //     HasOne<Tasks>().WithMany()
-        //     .IsRequired(false);
+        // modelBuilder.Entity<Tasks>().HasAlternateKey(p => new { p.TeamId });
     }
 }
 

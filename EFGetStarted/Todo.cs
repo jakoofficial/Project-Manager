@@ -12,12 +12,5 @@ namespace EFGetStarted
         public string Name { get; set; }
         public bool IsCompleted { get; set; }
 
-        public Todo() { }
-        public Todo(int todoId, string name, bool isCompleted)
-        {
-            TodoId = todoId;
-            Name = name;
-            IsCompleted = isCompleted;
-        }
     }
 }

@@ -5,7 +5,7 @@
 namespace EFGetStarted.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreation : Migration
+    public partial class op_27_3 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
