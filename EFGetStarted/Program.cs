@@ -59,8 +59,8 @@ public class Program
             seedWorkers();
         }
 
-        PrintTeamsWithoutTasks();
-
+        //PrintTeamsWithoutTasks();
+        PrintTeamsCurrentTask();
         Console.ReadLine();
     }
 
@@ -117,6 +117,17 @@ public class Program
 
             ctx.TeamWorkers.Add(new TeamWorker(){Team = noTaskTeam, Worker = Ejvind});
             ctx.SaveChanges();
+        }
+    }
+
+    static void PrintTeamsCurrentTask(){
+        List<Team> team = new();
+        using (var ctx = new BloggingContext()){
+            var t = ctx.Teams.Include(ta=>ta.Current);
+            foreach (var i in t) {
+                string curTask = (i.Current != null) ? i.Current.Name : "No current task";
+                Console.WriteLine($"Team: {i.Name} | Current Task: {curTask}");
+            }
         }
     }
 
